@@ -115,11 +115,11 @@ def pep(session):
                 logging.info(f"{pep_link}")
                 logging.info(f"Статус в карточке: {str(status.text)}")
                 logging.info(
-                    f"Ожидаемые статусы:",
-                    f" {EXPECTED_STATUS[abbr_tag.text[1:]][0]}"
+                    (f"Ожидаемые статусы:",
+                     f" {EXPECTED_STATUS[abbr_tag.text[1:]][0]}")
                 )
                 continue
-            AMOUNT_STATUS[abbr_tag.text[1:]] =(
+            AMOUNT_STATUS[abbr_tag.text[1:]] = (
                 AMOUNT_STATUS[abbr_tag.text[1:]] + 1
             )
     total = 0
