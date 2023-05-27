@@ -4,6 +4,7 @@ import logging
 from urllib.parse import urljoin
 import requests_cache
 from bs4 import BeautifulSoup
+from requests import RequestException
 from tqdm import tqdm
 
 from outputs import control_output
@@ -22,8 +23,6 @@ def whats_new(session):
     whats_new_url = urljoin(MAIN_DOC_URL, "whatsnew/")
     session = requests_cache.CachedSession()
     response = get_response(session, whats_new_url)
-    if response is None:
-        return
     response.encoding = "utf-8"
     soup = BeautifulSoup(response.text, features="lxml")
     main_div = find_tag(soup, "section", attrs={"id": "what-s-new-in-python"})
@@ -37,14 +36,11 @@ def whats_new(session):
         href = version_a_tag["href"]
         version_link = urljoin(whats_new_url, href)
         response = get_response(session, version_link)
-        if response is None:
-            continue
         response.encoding = "utf-8"
         soup = BeautifulSoup(response.text, features="lxml")
         h1 = find_tag(soup, "h1").getText()
         dl = soup.find("dl").text.replace("\n", " ")
         result.append((version_link, h1, dl))
-    print(result)
     return result
 
 
@@ -52,8 +48,6 @@ def latest_versions(session):
     session = requests_cache.CachedSession()
     response = get_response(session, MAIN_DOC_URL)
     response.encoding = "utf-8"
-    if response is None:
-        return
     soup = BeautifulSoup(response.text, "lxml")
     sidebar = soup.find("div", {"class": "sphinxsidebarwrapper"})
     ul_tags = sidebar.find_all("ul")
@@ -62,19 +56,14 @@ def latest_versions(session):
             a_tags = ul.find_all("a")
             break
     else:
-        raise Exception("Не найден список c версиями Python")
+        raise RequestException("Не найден список c версиями Python")
     result = [("Ссылка на документацию", "Версия", "Статус")]
     pattern = r"Python (?P<version>\d\.\d+) \((?P<status>.*)\)"
     for a_tag in a_tags:
         link = a_tag["href"]
         text_match = re.search(pattern, a_tag.text)
-        if text_match is not None:
-
-            version, status = text_match.groups()
-        else:
-            version, status = a_tag.text, ""
+        version, status = text_match.groups() if text_match else a_tag.text, ''
         result.append((link, version, status))
-
     return result
 
 
@@ -84,8 +73,6 @@ def download(session):
     downloads_dir.mkdir(exist_ok=True)
     session = requests_cache.CachedSession()
     response = session.get(downloads_url)
-    if response is None:
-        return
     response.encoding = "utf-8"
     soup = BeautifulSoup(response.text, "lxml")
     main_tag = soup.find("div", {"role": "main"})
@@ -105,8 +92,6 @@ def download(session):
 def pep(session):
     session = requests_cache.CachedSession()
     response = session.get(PEP_DOC_URL)
-    if response is None:
-        return
     response.encoding = "utf-8"
     soup = BeautifulSoup(response.text, "lxml")
     main_tag = soup.find_all("table", {"class": "pep-zero-table"})
@@ -135,8 +120,9 @@ def pep(session):
                     f" {EXPECTED_STATUS[abbr_tag.text[1:]][0]}"
                 )
                 continue
-            AMOUNT_STATUS[abbr_tag.text[1:]] = \
+            AMOUNT_STATUS[abbr_tag.text[1:]] = (
                 AMOUNT_STATUS[abbr_tag.text[1:]] + 1
+            )
     total = 0
     for keys, values in AMOUNT_STATUS.items():
         total = total + int(values)
