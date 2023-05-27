@@ -78,6 +78,6 @@ python main.py [вариант парсера] -o file
 
 
 ### Автор
-- [Рублёв Валерий](https://github.com/Vediusse/bs4_parser_pep "GitHub аккаунт")
+- [Рублёв Валерий](https://github.com/Vediusse "GitHub аккаунт")
 
 
