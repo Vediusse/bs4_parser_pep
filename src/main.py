@@ -27,7 +27,8 @@ def whats_new(session):
     soup = BeautifulSoup(response.text, features="lxml")
     main_div = find_tag(soup, "section", attrs={"id": "what-s-new-in-python"})
     div_with_ul = find_tag(main_div, "div", attrs={"class": "toctree-wrapper"})
-    sections_by_python = div_with_ul.find_all("li", attrs={"class": "toctree-l1"})
+    sections_by_python = div_with_ul.find_all("li",
+                                              attrs={"class": "toctree-l1"})
     result = [("Ссылка на статью", "Заголовок", "Редактор, Автор")]
     for section in tqdm(sections_by_python):
         version_a_tag = section.find("a")
@@ -114,10 +115,13 @@ def pep(session):
                 logging.info(f"{pep_link}")
                 logging.info(f"Статус в карточке: {str(status.text)}")
                 logging.info(
-                    f"Ожидаемые статусы:" f" {EXPECTED_STATUS[abbr_tag.text[1:]][0]}"
+                    f"Ожидаемые статусы:",
+                    f" {EXPECTED_STATUS[abbr_tag.text[1:]][0]}"
                 )
                 continue
-            AMOUNT_STATUS[abbr_tag.text[1:]] = AMOUNT_STATUS[abbr_tag.text[1:]] + 1
+            AMOUNT_STATUS[abbr_tag.text[1:]] =(
+                AMOUNT_STATUS[abbr_tag.text[1:]] + 1
+            )
     total = 0
     for keys, values in AMOUNT_STATUS.items():
         total = total + int(values)
