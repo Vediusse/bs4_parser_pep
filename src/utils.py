@@ -11,7 +11,7 @@ def get_response(session, url):
         response = session.get(url)
         response.encoding = "utf-8"
         if response is None:
-            raise RequestException(f'Нет ответа от страницы {url}')
+            raise RequestException(f"Нет ответа от страницы {url}")
         return response
     except RequestException:
         logging.exception(

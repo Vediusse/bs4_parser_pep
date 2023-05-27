@@ -6,11 +6,9 @@ from prettytable import PrettyTable
 from constants import BASE_DIR, DATETIME_FORMAT
 
 
-
-
 def control_output(results, cli_args):
     output = cli_args.output
-    if output == 'file':
+    if output == "file":
         OUTPUT_TYPES[output](results, cli_args)
     else:
         OUTPUT_TYPES[output](results)
@@ -43,7 +41,7 @@ def file_output(results, cli_args):
 
 
 OUTPUT_TYPES = {
-    'pretty': pretty_output,
-    'file': file_output,
+    "pretty": pretty_output,
+    "file": file_output,
     None: default_output,
 }
